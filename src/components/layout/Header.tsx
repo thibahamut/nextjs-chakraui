@@ -1,22 +1,24 @@
-import { Box, Text, Menu, MenuButton, MenuList, MenuItem, Button, Avatar } from '@chakra-ui/react'
-import { FiUser, FiLogOut } from 'react-icons/fi'
+import { Box, Text, Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react'
+import { FiUser, FiLogOut, FiEdit } from 'react-icons/fi'
+import { useRouter } from 'next/router'
 
 interface HeaderProps {
   user: {
     id: string
     email: string
-    last_sign_in_at: string
   }
   onLogout: () => void
 }
 
 export function Header({ user, onLogout }: HeaderProps) {
+  const router = useRouter()
+
   return (
     <Box as="header" w="100%" display="flex" alignItems="center" justifyContent="space-between">
       <Text fontSize="lg" fontWeight="bold">
         VWCO Cooperados
       </Text>
-      
+
       <Menu>
         <MenuButton
           as={Button}
@@ -27,6 +29,9 @@ export function Header({ user, onLogout }: HeaderProps) {
           {user.email}
         </MenuButton>
         <MenuList>
+          <MenuItem icon={<FiEdit />} onClick={() => router.push('/app/profile')}>
+            Editar perfil
+          </MenuItem>
           <MenuItem icon={<FiLogOut />} onClick={onLogout}>
             Sair
           </MenuItem>
