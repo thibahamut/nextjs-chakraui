@@ -1,7 +1,6 @@
-import Head from "next/head";
-// import { Image as Img} from "next/image";
-import { Button, Image } from '@chakra-ui/react';
-import Link from 'next/link';
+import { Box, Button, Image, VStack } from '@chakra-ui/react'
+import Link from 'next/link'
+import Head from 'next/head'
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -17,28 +16,35 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Login</title>
+        <title>VWCO Cooperados 2025</title>
         <meta name="description" content="Login page" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div style={{
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        minHeight: '100vh',
-        gap: '2rem'
-      }}>
+      
+      <Box
+        as="main"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minH="100vh"
+        gap={8}
+        p={4}
+      >
         <Image
           src="/graphics/vw-logo-home.png"
           alt="Logo"
           width={100}
+          height="auto"
         />
-        <Button as={Link} href="/login" colorScheme="blue" size="lg">
-          Ir para Login 123
-        </Button>
-      </div>
+
+        <VStack spacing={4}>
+          <Button as={Link} href="/login" colorScheme="blue" size="lg">
+            Acessar Sistema
+          </Button>
+        </VStack>
+      </Box>
     </>
-  );
+  )
 }
