@@ -24,7 +24,7 @@ export default function Custom404() {
       >
         <VStack spacing={6} maxW="600px" textAlign="center">
           <Image
-            src="/graphics/vw-logo-home.png"
+            src="/images/vw-logo.png"
             alt="Logo VW"
             width={120}
             height="auto"

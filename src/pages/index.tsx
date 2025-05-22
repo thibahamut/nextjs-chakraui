@@ -33,7 +33,7 @@ export default function Home() {
         p={4}
       >
         <Image
-          src="/graphics/vw-logo-home.png"
+          src="/images/vw-logo.png"
           alt="Logo"
           width={100}
           height="auto"

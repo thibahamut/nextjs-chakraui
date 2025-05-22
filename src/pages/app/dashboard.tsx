@@ -1,47 +1,63 @@
-import { Box, Button, Heading, Text, VStack, useToast } from '@chakra-ui/react'
+import { useState, useEffect } from 'react'
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Text,
+  VStack,
+  useToast,
+} from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
   const toast = useToast()
 
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
-          router.replace('/')
-          return
-        }
-        setUser(user)
-      } catch (error) {
-        console.error('Error getting user:', error)
-        router.replace('/')
-      } finally {
-        setIsLoading(false)
-      }
-    }
+    checkAuth()
+  }, [])
 
-    getUser()
-  }, [router])
+  const checkAuth = async () => {
+    try {
+      const response = await fetch('/api/auth/me', { credentials: 'include' })
+      if (!response.ok) {
+        throw new Error('Not authenticated')
+      }
+      const data = await response.json()
+      setUser(data.user)
+    } catch (error) {
+      router.push('/')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut()
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      })
+
+      if (!response.ok) {
+        throw new Error('Logout failed')
+      }
+
       toast({
-        title: 'Logout realizado com sucesso!',
+        title: 'Logged out successfully',
         status: 'success',
         duration: 3000,
         isClosable: true,
       })
-      router.replace('/')
+
+      router.push('/')
     } catch (error) {
       toast({
-        title: 'Erro ao fazer logout',
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to logout',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -49,7 +65,7 @@ export default function Dashboard() {
     }
   }
 
-  if (isLoading) {
+  if (loading) {
     return null
   }
 
@@ -58,29 +74,29 @@ export default function Dashboard() {
   }
 
   return (
-    <Box minH="100vh" p={8}>
-      <VStack spacing={8} maxW="800px" mx="auto">
+    <Container maxW="container.md" py={10}>
+      <VStack spacing={8}>
         <Heading>Dashboard</Heading>
-        
-        <Box w="full" p={6} bg="white" borderRadius="lg" boxShadow="lg">
-          <VStack spacing={4} align="start">
-            <Text fontSize="lg">
+
+        <Box w="100%" p={8} borderWidth={1} borderRadius="lg">
+          <VStack spacing={4} align="stretch">
+            <Text>
               <strong>Email:</strong> {user.email}
             </Text>
-            <Text fontSize="lg">
+            <Text>
               <strong>ID:</strong> {user.id}
             </Text>
-            <Text fontSize="lg">
-              <strong>Último login:</strong>{' '}
+            <Text>
+              <strong>Last Login:</strong>{' '}
               {new Date(user.last_sign_in_at).toLocaleString()}
             </Text>
+
+            <Button colorScheme="red" onClick={handleLogout}>
+              Logout
+            </Button>
           </VStack>
         </Box>
-
-        <Button colorScheme="red" onClick={handleLogout}>
-          Sair
-        </Button>
       </VStack>
-    </Box>
+    </Container>
   )
 } 
