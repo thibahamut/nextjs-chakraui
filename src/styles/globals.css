@@ -1,0 +1,75 @@
+@font-face {
+  font-family: 'VWHead';
+  src: url('/fonts/VWHead-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VWHead';
+  src: url('/fonts/VWHead.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VWHead';
+  src: url('/fonts/VWHead-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VWHead';
+  src: url('/fonts/VWHead-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VWHead';
+  src: url('/fonts/VWHead-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VWHead';
+  src: url('/fonts/VWHead-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --font-vwhead: 'VWHead', sans-serif;
+}
+
+* {
+  font-family: var(--font-vwhead) !important;
+}
+
+/* Garantir que os componentes do Chakra UI também usem a fonte */
+.chakra-toast,
+.chakra-alert,
+.chakra-modal,
+.chakra-popover,
+.chakra-menu,
+.chakra-drawer {
+  font-family: var(--font-vwhead) !important;
+}
+
+/* Garantir que os elementos dentro dos componentes também usem a fonte */
+.chakra-toast *,
+.chakra-alert *,
+.chakra-modal *,
+.chakra-popover *,
+.chakra-menu *,
+.chakra-drawer * {
+  font-family: var(--font-vwhead) !important;
+}

@@ -6,7 +6,6 @@ import {
   FormLabel,
   Input,
   VStack,
-  useToast,
   Container,
   Heading,
   Link,
@@ -17,6 +16,7 @@ import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 import Image from 'next/image'
 import { api } from '@/lib/api'
+import { toast } from '@/lib/toast'
 
 export default function Login() {
   const [isLogin, setIsLogin] = useState(true)
@@ -25,7 +25,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const router = useRouter()
-  const toast = useToast()
 
   useEffect(() => {
     checkAuth()
@@ -35,7 +34,7 @@ export default function Login() {
     try {
       const { error } = await api.auth.me()
       if (!error) {
-        router.push('/app/dashboard')
+        router.push('/app')
       }
     } catch {
       // Não faz nada, usuário não autenticado
@@ -58,21 +57,17 @@ export default function Login() {
       }
 
       toast({
-        title: isLogin ? 'Login successful' : 'Registration successful',
-        description: isLogin ? 'Welcome back!' : 'Please check your email for verification.',
+        title: isLogin ? 'Login com sucesso' : 'Registro com sucesso',
+        description: isLogin ? 'Bem-vindo de volta!' : 'Por favor, verifique seu email para verificação.',
         status: 'success',
-        duration: 5000,
-        isClosable: true,
       })
 
-      router.push('/app/dashboard')
+      router.push('/app')
     } catch (error) {
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'An error occurred',
+        title: 'Erro',
+        description: error instanceof Error ? error.message : 'Ocorreu um erro',
         status: 'error',
-        duration: 5000,
-        isClosable: true,
       })
     } finally {
       setLoading(false)

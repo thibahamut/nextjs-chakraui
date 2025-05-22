@@ -37,8 +37,6 @@ export default function ForgotPassword() {
         title: 'Email enviado',
         description: 'Verifique seu email para instruções de recuperação de senha.',
         status: 'success',
-        duration: 5000,
-        isClosable: true,
       })
 
       router.push('/auth/login')
@@ -47,8 +45,6 @@ export default function ForgotPassword() {
         title: 'Erro',
         description: error instanceof Error ? error.message : 'Ocorreu um erro',
         status: 'error',
-        duration: 5000,
-        isClosable: true,
       })
     } finally {
       setLoading(false)

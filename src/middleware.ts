@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
 
   // Se estiver na página de login e tiver sessão, redireciona para dashboard
   if (req.nextUrl.pathname === '/auth/login' && session) {
-    const redirectUrl = new URL('/app/dashboard', req.url)
+    const redirectUrl = new URL('/app', req.url)
     return NextResponse.redirect(redirectUrl)
   }
 

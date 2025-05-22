@@ -3,6 +3,14 @@ interface ApiResponse<T> {
   error?: string;
 }
 
+interface MeResponse {
+  user: {
+    id: string;
+    email: string;
+    last_sign_in_at: string;
+  };
+}
+
 const API_BASE_URL = '/api';
 
 async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
@@ -52,7 +60,7 @@ export const api = {
   // Auth specific methods
   auth: {
     async me() {
-      return api.get('/auth/me');
+      return api.get<MeResponse>('/auth/me');
     },
 
     async login(email: string, password: string) {
@@ -65,6 +73,10 @@ export const api = {
 
     async forgotPassword(email: string) {
       return api.post('/auth/forgot-password', { email });
+    },
+
+    async logout() {
+      return api.post('/auth/logout', {});
     },
   },
 }; 
