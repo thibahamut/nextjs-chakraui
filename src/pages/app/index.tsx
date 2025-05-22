@@ -7,6 +7,7 @@ import {
   useDisclosure,
   Grid,
   GridItem,
+  useBreakpointValue,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { FiMenu } from 'react-icons/fi'
@@ -27,6 +28,7 @@ export default function AppLayout() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const isLargeScreen = useBreakpointValue({ base: false, lg: true })
 
   useEffect(() => {
     checkAuth()
@@ -111,9 +113,7 @@ export default function AppLayout() {
       </GridItem>
 
       <GridItem area="nav" display={{ base: 'none', lg: 'block' }}>
-        <Box p={4} borderRightWidth={1} h="100%">
-          {/* Navigation content */}
-        </Box>
+        <AppDrawer isOpen={isOpen} onClose={onClose} />
       </GridItem>
 
       <GridItem area="main">
@@ -127,7 +127,6 @@ export default function AppLayout() {
         <Footer />
       </GridItem>
 
-      <AppDrawer isOpen={isOpen} onClose={onClose} />
     </Grid>
   )
 } 
