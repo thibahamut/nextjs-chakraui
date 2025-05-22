@@ -11,9 +11,8 @@ import {
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { api } from '@/lib/api'
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
 import { toast } from '@/lib/toast'
+import { FiArrowLeft } from 'react-icons/fi'
 
 interface ProfileData {
   id: string
@@ -86,82 +85,74 @@ export default function Profile() {
   }
 
   return (
-    <Box minH="100vh" display="flex" flexDirection="column">
-      <Header user={profile} onLogout={() => router.push('/')} />
-      
-      <Container maxW="container.md" py={10} flex="1">
-        <VStack spacing={8} align="stretch">
-          <Heading size="lg">Editar Perfil</Heading>
+    <Container maxW="container.md" py={8}>
+      <VStack spacing={8} align="stretch">
+        <Button
+          leftIcon={<FiArrowLeft />}
+          variant="ghost"
+          onClick={() => router.back()}
+          alignSelf="flex-start"
+        >
+          Voltar
+        </Button>
 
-          <Box as="form" onSubmit={handleSubmit}>
-            <VStack spacing={4}>
-              <FormControl>
-                <FormLabel>Email</FormLabel>
-                <Input value={profile.email} isReadOnly />
-              </FormControl>
+        <Heading size="lg">Editar Perfil</Heading>
 
-              <FormControl>
-                <FormLabel>Nome</FormLabel>
-                <Input
-                  value={profile.first_name || ''}
-                  onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
-                />
-              </FormControl>
+        <Box as="form" onSubmit={handleSubmit}>
+          <VStack spacing={4}>
+            <FormControl>
+              <FormLabel>Email</FormLabel>
+              <Input value={profile.email} isReadOnly />
+            </FormControl>
 
-              <FormControl>
-                <FormLabel>Sobrenome</FormLabel>
-                <Input
-                  value={profile.last_name || ''}
-                  onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
-                />
-              </FormControl>
+            <FormControl>
+              <FormLabel>Nome</FormLabel>
+              <Input
+                value={profile.first_name || ''}
+                onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
+              />
+            </FormControl>
 
-              <FormControl>
-                <FormLabel>Telefone</FormLabel>
-                <Input
-                  value={profile.phone_number || ''}
-                  onChange={(e) => setProfile({ ...profile, phone_number: e.target.value })}
-                />
-              </FormControl>
+            <FormControl>
+              <FormLabel>Sobrenome</FormLabel>
+              <Input
+                value={profile.last_name || ''}
+                onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
+              />
+            </FormControl>
 
-              <FormControl>
-                <FormLabel>Departamento</FormLabel>
-                <Input
-                  value={profile.department || ''}
-                  onChange={(e) => setProfile({ ...profile, department: e.target.value })}
-                />
-              </FormControl>
+            <FormControl>
+              <FormLabel>Telefone</FormLabel>
+              <Input
+                value={profile.phone_number || ''}
+                onChange={(e) => setProfile({ ...profile, phone_number: e.target.value })}
+              />
+            </FormControl>
 
-              <FormControl>
-                <FormLabel>Cargo</FormLabel>
-                <Input value={profile.role || ''} isReadOnly />
-              </FormControl>
+            <FormControl>
+              <FormLabel>Departamento</FormLabel>
+              <Input
+                value={profile.department || ''}
+                onChange={(e) => setProfile({ ...profile, department: e.target.value })}
+              />
+            </FormControl>
 
-              <Box display="flex" gap={4} width="100%">
-                <Button
-                  type="button"
-                  variant="outline"
-                  width="100%"
-                  onClick={() => router.push('/app')}
-                >
-                  Voltar
-                </Button>
+            <FormControl>
+              <FormLabel>Cargo</FormLabel>
+              <Input value={profile.role || ''} isReadOnly />
+            </FormControl>
 
-                <Button
-                  type="submit"
-                  colorScheme="blue"
-                  width="100%"
-                  isLoading={saving}
-                >
-                  Salvar Alterações
-                </Button>
-              </Box>
-            </VStack>
-          </Box>
-        </VStack>
-      </Container>
-
-      <Footer />
-    </Box>
+            <Button
+              type="submit"
+              colorScheme="blue"
+              width="100%"
+              isLoading={saving}
+            >
+              Salvar Alterações
+            </Button>
+          </VStack>
+        </Box>
+      </VStack>
+    </Container>
   )
 } 

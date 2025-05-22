@@ -66,6 +66,7 @@ export function AppDrawer({ isOpen, onClose }: DrawerProps) {
       <Button
         variant="ghost"
         justifyContent="flex-start"
+        onClick={() => handleNavigation('/app/regulations')}
         leftIcon={<Icon as={FiFileText} />}
       >
         Regulamento
