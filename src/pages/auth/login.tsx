@@ -6,12 +6,11 @@ import {
   FormLabel,
   Input,
   VStack,
-  Text,
   useToast,
   Container,
   Heading,
   Link,
-  Switch,
+  HStack,
   FormHelperText,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
@@ -38,7 +37,7 @@ export default function Login() {
       if (!error) {
         router.push('/app/dashboard')
       }
-    } catch (error) {
+    } catch {
       // Não faz nada, usuário não autenticado
     } finally {
       setIsCheckingAuth(false)
@@ -121,6 +120,13 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                {isLogin && (
+                  <FormHelperText textAlign="right">
+                    <Link as={NextLink} href="/auth/forgot-password" color="blue.500">
+                      Esqueceu sua senha?
+                    </Link>
+                  </FormHelperText>
+                )}
               </FormControl>
 
               <Button
@@ -132,16 +138,22 @@ export default function Login() {
                 {isLogin ? 'Login' : 'Register'}
               </Button>
 
-              <FormControl display="flex" alignItems="center">
-                <FormLabel htmlFor="is-login" mb="0">
-                  {isLogin ? 'Need an account?' : 'Already have an account?'}
-                </FormLabel>
-                <Switch
-                  id="is-login"
-                  isChecked={isLogin}
-                  onChange={() => setIsLogin(!isLogin)}
-                />
-              </FormControl>
+              <HStack spacing={4} width="100%" justify="center">
+                <Button
+                  variant={isLogin ? "solid" : "outline"}
+                  colorScheme="blue"
+                  onClick={() => setIsLogin(true)}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant={!isLogin ? "solid" : "outline"}
+                  colorScheme="blue"
+                  onClick={() => setIsLogin(false)}
+                >
+                  Register
+                </Button>
+              </HStack>
             </VStack>
           </form>
         </Box>

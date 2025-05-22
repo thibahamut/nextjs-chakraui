@@ -10,8 +10,14 @@ import {
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 
+interface DashboardUser {
+  id: string
+  email: string
+  last_sign_in_at: string
+}
+
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<DashboardUser | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const toast = useToast()
@@ -28,7 +34,7 @@ export default function Dashboard() {
       }
       const data = await response.json()
       setUser(data.user)
-    } catch (error) {
+    } catch {
       router.push('/')
     } finally {
       setLoading(false)
@@ -54,7 +60,7 @@ export default function Dashboard() {
       })
 
       router.push('/')
-    } catch (error) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to logout',

@@ -24,14 +24,14 @@ export const api = {
         credentials: 'include',
       });
       return handleResponse<T>(response);
-    } catch (error) {
+    } catch (error: unknown) {
       return {
         error: error instanceof Error ? error.message : 'An error occurred'
       };
     }
   },
 
-  async post<T>(endpoint: string, body: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, body: unknown): Promise<ApiResponse<T>> {
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
@@ -42,7 +42,7 @@ export const api = {
         body: JSON.stringify(body),
       });
       return handleResponse<T>(response);
-    } catch (error) {
+    } catch (error: unknown) {
       return {
         error: error instanceof Error ? error.message : 'An error occurred'
       };
@@ -61,6 +61,10 @@ export const api = {
 
     async register(email: string, password: string) {
       return api.post('/auth/register', { email, password });
+    },
+
+    async forgotPassword(email: string) {
+      return api.post('/auth/forgot-password', { email });
     },
   },
 }; 
