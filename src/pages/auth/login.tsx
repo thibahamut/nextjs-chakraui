@@ -18,7 +18,7 @@ export default function Login() {
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
-          router.replace('/dashboard')
+          router.replace('/app/dashboard')
         }
       } catch (error) {
         console.error('Error checking auth:', error)
@@ -58,7 +58,7 @@ export default function Login() {
           duration: 3000,
           isClosable: true,
         })
-        router.replace('/dashboard')
+        router.replace('/app/dashboard')
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -83,7 +83,7 @@ export default function Login() {
           duration: 5000,
           isClosable: true,
         })
-        router.replace('/dashboard')
+        router.replace('/app/dashboard')
       }
     } catch (error: any) {
       toast({

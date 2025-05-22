@@ -28,8 +28,8 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getSession()
 
   // Se estiver na página de login e tiver sessão, redireciona para dashboard
-  if (req.nextUrl.pathname === '/login' && session) {
-    const redirectUrl = new URL('/dashboard', req.url)
+  if (req.nextUrl.pathname === '/auth/login' && session) {
+    const redirectUrl = new URL('/app/dashboard', req.url)
     return NextResponse.redirect(redirectUrl)
   }
 

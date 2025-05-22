@@ -40,7 +40,7 @@ export default function Home() {
         />
 
         <VStack spacing={4}>
-          <Button as={Link} href="/login" colorScheme="blue" size="lg">
+          <Button as={Link} href="/auth/login" colorScheme="blue" size="lg">
             Acessar Sistema
           </Button>
         </VStack>
