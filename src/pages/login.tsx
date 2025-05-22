@@ -1,6 +1,6 @@
 import { Box, Button, Heading, Input, VStack, Text, useToast, FormControl, FormLabel } from '@chakra-ui/react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { supabase } from '@/lib/supabase'
 
@@ -9,8 +9,26 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const toast = useToast()
   const router = useRouter()
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          router.replace('/dashboard')
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error)
+      } finally {
+        setIsCheckingAuth(false)
+      }
+    }
+
+    checkUser()
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -78,6 +96,11 @@ export default function Login() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Mostra nada enquanto verifica a autenticação
+  if (isCheckingAuth) {
+    return null
   }
 
   return (

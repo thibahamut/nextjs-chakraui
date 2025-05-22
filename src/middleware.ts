@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Lista de rotas públicas que não precisam de autenticação
-const publicRoutes = ['/login', '/', '/api']
+const publicRoutes = ['/', '/api']
 
 export async function middleware(req: NextRequest) {
   // Se for uma rota pública, permite o acesso sem verificação
@@ -27,9 +27,15 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
-  // Se não houver sessão e a rota não for pública, redireciona para login
-  if (!session) {
-    const redirectUrl = new URL('/login', req.url)
+  // Se estiver na página de login e tiver sessão, redireciona para dashboard
+  if (req.nextUrl.pathname === '/login' && session) {
+    const redirectUrl = new URL('/dashboard', req.url)
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // Se não houver sessão e a rota não for pública, redireciona para home
+  if (!session && !publicRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
+    const redirectUrl = new URL('/', req.url)
     return NextResponse.redirect(redirectUrl)
   }
 
