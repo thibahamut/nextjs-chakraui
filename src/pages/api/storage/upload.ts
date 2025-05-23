@@ -60,10 +60,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const sanitizedFileName = sanitizeFileName(file.originalFilename || file.newFilename || 'arquivo.pdf')
     const fileData = fs.readFileSync(file.filepath)
 
+    // Create user-specific path
+    const userPath = `users/${user.id}/${sanitizedFileName}`
+
     // Upload para o storage
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(sanitizedFileName, fileData, {
+      .upload(userPath, fileData, {
         contentType: file.mimetype || undefined,
         upsert: true,
       })
@@ -73,7 +76,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: uploadError.message })
     }
 
-    return res.status(200).json({ message: 'Upload realizado com sucesso' })
+    return res.status(200).json({ 
+      message: 'Upload realizado com sucesso',
+      path: userPath 
+    })
   } catch (error: any) {
     console.error('Upload error:', error)
     return res.status(500).json({ error: error.message || 'Erro interno do servidor' })

@@ -29,8 +29,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'File name is required' })
     }
 
+    // Create user-specific path
+    const userPath = `users/${user.id}/${fileName}`
+
     // Remove o arquivo do bucket
-    const { error } = await supabase.storage.from(STORAGE_BUCKET).remove([fileName])
+    const { error } = await supabase.storage.from(STORAGE_BUCKET).remove([userPath])
     if (error) {
       console.error('Storage error:', error)
       return res.status(500).json({ error: error.message })

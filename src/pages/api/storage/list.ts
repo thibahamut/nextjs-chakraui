@@ -26,16 +26,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Lista arquivos do bucket
-    const { data: files, error } = await supabase.storage.from(STORAGE_BUCKET).list()
+    const userPath = `users/${user.id}`
+    const { data: files, error } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .list(userPath)
+    
     if (error) {
       console.error('Storage error:', error)
       return res.status(500).json({ error: error.message })
     }
 
     const fileList = files?.map(async file => {
+      const filePath = `${userPath}/${file.name}`
       const { data, error } = await supabase.storage
         .from(STORAGE_BUCKET)
-        .createSignedUrl(file.name, 60) // URL válida por 60 segundos
+        .createSignedUrl(filePath, 60) // URL válida por 60 segundos
       
       if (error) {
         console.error('Error creating signed URL:', error)
@@ -44,6 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       return {
         name: file.name,
+        path: filePath,
         url: data.signedUrl,
       }
     }) || []

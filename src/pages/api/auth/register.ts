@@ -27,7 +27,10 @@ export default async function handler(
 
     // Se já criou a sessão, salva o token no cookie
     if (data.session) {
-      res.setHeader('Set-Cookie', `sb-access-token=${data.session.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`)
+      res.setHeader('Set-Cookie', [
+        `sb-access-token=${data.session.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`,
+        `sb-refresh-token=${data.session.refresh_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`
+      ])
     }
 
     // Busca informações adicionais do usuário

@@ -50,9 +50,22 @@ export default function AppLayout() {
 
   const checkAuth = async () => {
     try {
-      const { data: authData, error: authError } = await api.auth.me()
-      if (authError || !authData) {
-        throw new Error(authError || 'Not authenticated')
+      let { data: authData, error: authError } = await api.auth.me()
+      if (authError) {
+        // If the error is about session expiration, try to refresh
+        if (authError.includes('expired') || authError.includes('invalid')) {
+          const { data: refreshData, error: refreshError } = await api.auth.me()
+          if (refreshError || !refreshData) {
+            throw new Error(refreshError || 'Not authenticated')
+          }
+          authData = refreshData
+        } else {
+          throw new Error(authError)
+        }
+      }
+
+      if (!authData) {
+        throw new Error('Not authenticated')
       }
 
       // Fetch user profile to get role
@@ -65,7 +78,8 @@ export default function AppLayout() {
         ...authData.user,
         role: profileData.role,
       })
-    } catch {
+    } catch (error) {
+      console.error('Auth check error:', error)
       router.push('/')
     } finally {
       setLoading(false)

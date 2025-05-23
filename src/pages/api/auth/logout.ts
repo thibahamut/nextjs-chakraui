@@ -9,8 +9,11 @@ export default async function handler(
   }
 
   try {
-    // Remove o cookie HTTP Only
-    res.setHeader('Set-Cookie', 'sb-access-token=deleted; Path=/; HttpOnly; Max-Age=0; SameSite=Lax')
+    // Remove os cookies HTTP Only
+    res.setHeader('Set-Cookie', [
+      'sb-access-token=deleted; Path=/; HttpOnly; Max-Age=0; SameSite=Lax',
+      'sb-refresh-token=deleted; Path=/; HttpOnly; Max-Age=0; SameSite=Lax'
+    ])
     return res.status(200).json({ message: 'Logged out successfully' })
   } catch (error) {
     console.error('Logout error:', error)

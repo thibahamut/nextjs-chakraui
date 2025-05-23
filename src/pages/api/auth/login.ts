@@ -25,8 +25,11 @@ export default async function handler(
       return res.status(401).json({ error: error?.message || 'Login failed' })
     }
 
-    // Salva o token de acesso em um cookie HTTP Only
-    res.setHeader('Set-Cookie', `sb-access-token=${data.session.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`)
+    // Salva os tokens em cookies HTTP Only
+    res.setHeader('Set-Cookie', [
+      `sb-access-token=${data.session.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`,
+      `sb-refresh-token=${data.session.refresh_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`
+    ])
 
     // Busca informações adicionais do usuário
     const { data: userData, error: userError } = await supabase
