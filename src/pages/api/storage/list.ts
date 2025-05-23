@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.NEXT_SUPABASE_SERVICE_ROLE_KEY!
-const STORAGE_BUCKET = 'vwco-bucket'
+const STORAGE_BUCKET = process.env.NEXT_STORAGE_BUCKET!
 
 // Create admin client with service role key
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
@@ -44,15 +44,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: error.message })
     }
 
-    const fileList = files?.map(file => {
-      const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(file.name)
+    const fileList = files?.map(async file => {
+      const { data, error } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .createSignedUrl(file.name, 60) // URL válida por 60 segundos
+      
+      if (error) {
+        console.error('Error creating signed URL:', error)
+        return null
+      }
+
       return {
         name: file.name,
-        url: data.publicUrl,
+        url: data.signedUrl,
       }
     }) || []
 
-    return res.status(200).json({ files: fileList })
+    const resolvedFiles = (await Promise.all(fileList)).filter(Boolean)
+
+    return res.status(200).json({ files: resolvedFiles })
   } catch (error: any) {
     console.error('List error:', error)
     return res.status(500).json({ error: error.message || 'Internal server error' })

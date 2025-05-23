@@ -9,6 +9,8 @@ import {
   FormControl,
   FormLabel,
   HStack,
+  Spinner,
+  Center,
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -22,6 +24,7 @@ export default function RegulationsPage() {
   const [file, setFile] = useState<File | null>(null)
   const [currentFile, setCurrentFile] = useState<{ name: string; url: string } | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
@@ -29,6 +32,7 @@ export default function RegulationsPage() {
   }, [])
 
   const fetchCurrentFile = async () => {
+    setIsFetching(true)
     try {
       const res = await fetch('/api/storage/list', {
         credentials: 'include',
@@ -49,6 +53,8 @@ export default function RegulationsPage() {
         duration: 3000,
         isClosable: true,
       })
+    } finally {
+      setIsFetching(false)
     }
   }
 
@@ -174,7 +180,11 @@ export default function RegulationsPage() {
         </Button>
         <Heading size="lg">Regulamento</Heading>
         
-        {currentFile && (
+        {isFetching ? (
+          <Center p={8}>
+            <Spinner size="xl" color="blue.500" />
+          </Center>
+        ) : currentFile && (
           <Box p={4} borderWidth={1} borderRadius="md">
             <Text fontWeight="bold">Arquivo atual:</Text>
             <HStack mt={2} spacing={4}>
@@ -182,7 +192,19 @@ export default function RegulationsPage() {
               <Button
                 leftIcon={<FiDownload />}
                 size="sm"
-                onClick={() => window.open(currentFile.url, '_blank')}
+                onClick={() => {
+                  if (currentFile?.url) {
+                    window.open(currentFile.url, '_blank')
+                  } else {
+                    toast({
+                      title: 'Erro ao baixar arquivo',
+                      description: 'URL do arquivo não disponível',
+                      status: 'error',
+                      duration: 3000,
+                      isClosable: true,
+                    })
+                  }
+                }}
               >
                 Baixar
               </Button>
