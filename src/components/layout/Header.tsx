@@ -1,6 +1,9 @@
-import { Box, Text, Menu, MenuButton, MenuList, MenuItem, Button } from '@chakra-ui/react'
+import { Box, Text, Menu, MenuButton, MenuList, MenuItem, Button, VStack } from '@chakra-ui/react'
 import { FiUser, FiLogOut, FiEdit } from 'react-icons/fi'
 import { useRouter } from 'next/router'
+import { motion } from 'framer-motion'
+
+const MotionBox = motion(Box)
 
 interface HeaderProps {
   user: {
@@ -15,10 +18,27 @@ export function Header({ user, onLogout }: HeaderProps) {
   const router = useRouter()
 
   return (
-    <Box as="header" w="100%" display="flex" alignItems="center" justifyContent="space-between">
-      <Text fontSize="lg" fontWeight="bold">
-        VWCO Cooperados
-      </Text>
+    <MotionBox 
+      as="header" 
+      w="100%" 
+      h="80px" 
+      display="flex" 
+      alignItems="center" 
+      justifyContent="space-between"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      style={{ opacity: 1 }}
+    >
+
+      <VStack gap={0} alignItems='flex-start' ml={4}>
+        <Text fontSize="lg" fontWeight="bold">
+          VWCO Cooperados
+        </Text>
+        <Text as="span" fontSize="lg" color="gray.500">
+          2025
+        </Text>
+      </VStack>
 
       <Menu>
         <MenuButton
@@ -43,6 +63,6 @@ export function Header({ user, onLogout }: HeaderProps) {
           </MenuItem>
         </MenuList>
       </Menu>
-    </Box>
+    </MotionBox>
   )
 } 

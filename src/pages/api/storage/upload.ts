@@ -2,6 +2,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { supabase, STORAGE_BUCKET } from '@/lib/supabase'
 import { validateAndRefreshToken } from '@/lib/auth'
+import formidable from 'formidable'
+import fs from 'fs'
 
 export const config = {
   api: {
@@ -20,25 +22,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: authError || 'User not found' })
     }
 
-    const { fileName, fileType } = req.body
+    const form = formidable({ multiples: false })
+    const [fields, files] = await new Promise<[formidable.Fields, formidable.Files]>((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err)
+        resolve([fields, files])
+      })
+    })
 
-    if (!fileName || !fileType) {
-      return res.status(400).json({ error: 'File name and type are required' })
+    const file = files.file?.[0] as formidable.File
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' })
     }
 
-    // Create a signed URL for upload
+    // Read file buffer
+    const fileBuffer = await fs.promises.readFile(file.filepath)
+    const fileName = file.originalFilename || 'document.pdf'
+
+    // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .createSignedUploadUrl(`${user.id}/${fileName}`)
+      .upload(`users/${user.id}/${fileName}`, fileBuffer, {
+        contentType: file.mimetype || 'application/pdf',
+        upsert: true
+      })
 
     if (error) {
       console.error('Storage error:', error)
-      return res.status(500).json({ error: 'Failed to create upload URL' })
+      return res.status(500).json({ error: 'Failed to upload file' })
     }
 
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(`users/${user.id}/${fileName}`)
+
     return res.status(200).json({
-      signedUrl: data.signedUrl,
-      path: `${user.id}/${fileName}`,
+      url: publicUrl,
+      path: `users/${user.id}/${fileName}`,
     })
   } catch (error) {
     console.error('Upload error:', error)

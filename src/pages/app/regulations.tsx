@@ -103,9 +103,11 @@ export default function RegulationsPage() {
         body: formData,
       })
 
+      const dataUpload = await resUpload.json()
+
       if (!resUpload.ok) {
-        const dataUpload = await resUpload.json()
-        throw new Error(dataUpload.error || 'Erro ao fazer upload')
+        console.error('Upload error response:', dataUpload)
+        throw new Error(dataUpload.error || dataUpload.message || 'Erro ao fazer upload')
       }
 
       await fetchCurrentFile()
@@ -121,9 +123,9 @@ export default function RegulationsPage() {
       console.error('Error uploading file:', error)
       toast({
         title: 'Erro ao fazer upload',
-        description: error.message || 'Não foi possível fazer o upload do arquivo.',
+        description: error.message || 'Não foi possível fazer o upload do arquivo. Por favor, tente novamente.',
         status: 'error',
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       })
     } finally {

@@ -25,7 +25,7 @@ export default async function handler(
     // Delete file from user's folder
     const { error } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .remove([`${user.id}/${fileName}`])
+      .remove([`users/${user.id}/${fileName}`])
 
     if (error) {
       console.error('Storage error:', error)
