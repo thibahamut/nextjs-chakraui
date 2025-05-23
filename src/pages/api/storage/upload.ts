@@ -1,27 +1,12 @@
 // Certifique-se de instalar o formidable: npm install formidable
 import { NextApiRequest, NextApiResponse } from 'next'
-import fs from 'fs'
-import { IncomingForm } from 'formidable'
 import { supabase, STORAGE_BUCKET } from '@/lib/supabase'
+import { validateAndRefreshToken } from '@/lib/auth'
 
 export const config = {
   api: {
     bodyParser: false,
   },
-}
-
-function getTokenFromCookie(req: NextApiRequest) {
-  const cookie = req.headers.cookie || ''
-  const match = cookie.match(/sb-access-token=([^;]+)/)
-  return match ? match[1] : null
-}
-
-// Função para sanitizar o nome do arquivo
-function sanitizeFileName(fileName: string): string {
-  // Remove acentos
-  const withoutAccents = fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  // Substitui caracteres especiais e espaços por underscore
-  return withoutAccents.replace(/[^a-zA-Z0-9.-]/g, '_')
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -30,58 +15,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const token = getTokenFromCookie(req)
-    if (!token) {
-      return res.status(401).json({ error: 'Not authenticated' })
+    const { user, error: authError } = await validateAndRefreshToken(req, res)
+    if (authError || !user) {
+      return res.status(401).json({ error: authError || 'User not found' })
     }
 
-    // Recupera o usuário autenticado
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token)
-    if (userError || !user) {
-      return res.status(401).json({ error: 'Invalid or expired token' })
+    const { fileName, fileType } = req.body
+
+    if (!fileName || !fileType) {
+      return res.status(400).json({ error: 'File name and type are required' })
     }
 
-    // Parse multipart form
-    const form = new IncomingForm()
-    
-    const [fields, files] = await new Promise<[any, any]>((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
-        if (err) reject(err)
-        resolve([fields, files])
-      })
-    })
-
-    const fileField = files.file
-    const file = Array.isArray(fileField) ? fileField[0] : fileField
-    if (!file) {
-      return res.status(400).json({ error: 'Arquivo não enviado' })
-    }
-
-    const sanitizedFileName = sanitizeFileName(file.originalFilename || file.newFilename || 'arquivo.pdf')
-    const fileData = fs.readFileSync(file.filepath)
-
-    // Create user-specific path
-    const userPath = `users/${user.id}/${sanitizedFileName}`
-
-    // Upload para o storage
-    const { error: uploadError } = await supabase.storage
+    // Create a signed URL for upload
+    const { data, error } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(userPath, fileData, {
-        contentType: file.mimetype || undefined,
-        upsert: true,
-      })
+      .createSignedUploadUrl(`${user.id}/${fileName}`)
 
-    if (uploadError) {
-      console.error('Upload error:', uploadError)
-      return res.status(500).json({ error: uploadError.message })
+    if (error) {
+      console.error('Storage error:', error)
+      return res.status(500).json({ error: 'Failed to create upload URL' })
     }
 
-    return res.status(200).json({ 
-      message: 'Upload realizado com sucesso',
-      path: userPath 
+    return res.status(200).json({
+      signedUrl: data.signedUrl,
+      path: `${user.id}/${fileName}`,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Upload error:', error)
-    return res.status(500).json({ error: error.message || 'Erro interno do servidor' })
+    return res.status(500).json({ error: 'Internal server error' })
   }
 } 

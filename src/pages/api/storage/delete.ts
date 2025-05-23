@@ -1,47 +1,40 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { supabase, STORAGE_BUCKET } from '@/lib/supabase'
+import { validateAndRefreshToken } from '@/lib/auth'
 
-function getTokenFromCookie(req: NextApiRequest) {
-  const cookie = req.headers.cookie || ''
-  const match = cookie.match(/sb-access-token=([^;]+)/)
-  return match ? match[1] : null
-}
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'DELETE') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
   try {
-    const token = getTokenFromCookie(req)
-    if (!token) {
-      return res.status(401).json({ error: 'Not authenticated' })
-    }
-
-    // Recupera o usuário autenticado
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token)
-    if (userError || !user) {
-      return res.status(401).json({ error: 'Invalid or expired token' })
+    const { user, error: authError } = await validateAndRefreshToken(req, res)
+    if (authError || !user) {
+      return res.status(401).json({ error: authError || 'User not found' })
     }
 
     const { fileName } = req.query
+
     if (!fileName || typeof fileName !== 'string') {
       return res.status(400).json({ error: 'File name is required' })
     }
 
-    // Create user-specific path
-    const userPath = `users/${user.id}/${fileName}`
+    // Delete file from user's folder
+    const { error } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .remove([`${user.id}/${fileName}`])
 
-    // Remove o arquivo do bucket
-    const { error } = await supabase.storage.from(STORAGE_BUCKET).remove([userPath])
     if (error) {
       console.error('Storage error:', error)
-      return res.status(500).json({ error: error.message })
+      return res.status(500).json({ error: 'Failed to delete file' })
     }
 
     return res.status(200).json({ message: 'File deleted successfully' })
-  } catch (error: any) {
+  } catch (error) {
     console.error('Delete error:', error)
-    return res.status(500).json({ error: error.message || 'Internal server error' })
+    return res.status(500).json({ error: 'Internal server error' })
   }
 } 

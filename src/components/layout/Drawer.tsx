@@ -49,14 +49,6 @@ export function AppDrawer({ isOpen, onClose, user }: DrawerProps) {
 
   const NavigationContent = () => (
     <VStack spacing={4} align="stretch">
-      <Button
-        variant="ghost"
-        justifyContent="flex-start"
-        onClick={() => handleNavigation('/app')}
-        leftIcon={<Icon as={FiHome} />}
-      >
-        Início
-      </Button>
 
       <Button
         variant="ghost"

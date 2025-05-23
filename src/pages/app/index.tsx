@@ -51,27 +51,42 @@ export default function AppLayout() {
   const checkAuth = async () => {
     try {
       let { data: authData, error: authError } = await api.auth.me()
+      
+      // Se houver erro de autenticação
       if (authError) {
-        // If the error is about session expiration, try to refresh
+        // Se for erro de token expirado ou inválido, tenta refresh
         if (authError.includes('expired') || authError.includes('invalid')) {
           const { data: refreshData, error: refreshError } = await api.auth.me()
+          
+          // Se o refresh falhar, redireciona para home
           if (refreshError || !refreshData) {
-            throw new Error(refreshError || 'Not authenticated')
+            console.error('Token refresh failed:', refreshError)
+            router.replace('/')
+            return
           }
+          
           authData = refreshData
         } else {
-          throw new Error(authError)
+          // Se for outro tipo de erro, redireciona para home
+          console.error('Auth error:', authError)
+          router.replace('/')
+          return
         }
       }
 
+      // Se não houver dados de autenticação, redireciona para home
       if (!authData) {
-        throw new Error('Not authenticated')
+        console.error('No auth data')
+        router.replace('/')
+        return
       }
 
-      // Fetch user profile to get role
+      // Busca informações do perfil
       const { data: profileData, error: profileError } = await api.get<ProfileData>('/profile')
       if (profileError || !profileData) {
-        throw new Error(profileError || 'Failed to fetch profile')
+        console.error('Profile fetch error:', profileError)
+        router.replace('/')
+        return
       }
 
       setUser({
@@ -80,7 +95,7 @@ export default function AppLayout() {
       })
     } catch (error) {
       console.error('Auth check error:', error)
-      router.push('/')
+      router.replace('/')
     } finally {
       setLoading(false)
     }
