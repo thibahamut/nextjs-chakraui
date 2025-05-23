@@ -83,11 +83,9 @@ export default function RegulationsPage() {
     try {
       // Se já existe arquivo, exclui antes
       if (currentFile) {
-        const resDelete = await fetch('/api/storage/delete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const resDelete = await fetch(`/api/storage/delete?fileName=${encodeURIComponent(currentFile.name)}`, {
+          method: 'DELETE',
           credentials: 'include',
-          body: JSON.stringify({ fileName: currentFile.name }),
         })
         if (!resDelete.ok) {
           const dataDelete = await resDelete.json()
@@ -137,11 +135,9 @@ export default function RegulationsPage() {
     if (!currentFile) return
     setIsLoading(true)
     try {
-      const res = await fetch('/api/storage/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`/api/storage/delete?fileName=${encodeURIComponent(currentFile.name)}`, {
+        method: 'DELETE',
         credentials: 'include',
-        body: JSON.stringify({ fileName: currentFile.name }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao excluir arquivo')
