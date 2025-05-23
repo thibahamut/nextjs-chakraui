@@ -1,17 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.NEXT_SUPABASE_SERVICE_ROLE_KEY!
-const STORAGE_BUCKET = process.env.NEXT_STORAGE_BUCKET!
-
-// Create admin client with service role key
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-})
+import { supabase, STORAGE_BUCKET } from '@/lib/supabase'
 
 function getTokenFromCookie(req: NextApiRequest) {
   const cookie = req.headers.cookie || ''

@@ -1,26 +1,14 @@
 // Certifique-se de instalar o formidable: npm install formidable
 import { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 import { IncomingForm } from 'formidable'
+import { supabase, STORAGE_BUCKET } from '@/lib/supabase'
 
 export const config = {
   api: {
     bodyParser: false,
   },
 }
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.NEXT_SUPABASE_SERVICE_ROLE_KEY!
-const STORAGE_BUCKET = process.env.NEXT_STORAGE_BUCKET!
-
-// Create admin client with service role key
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-})
 
 function getTokenFromCookie(req: NextApiRequest) {
   const cookie = req.headers.cookie || ''

@@ -1,10 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import { supabase } from '@/lib/supabase'
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,11 +30,23 @@ export default async function handler(
       res.setHeader('Set-Cookie', `sb-access-token=${data.session.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`)
     }
 
+    // Busca informações adicionais do usuário
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', data.user?.id)
+      .single()
+
+    if (userError) {
+      console.error('Error fetching user data:', userError)
+    }
+
     // Retorna apenas os dados necessários
     return res.status(201).json({
       user: {
         id: data.user?.id,
         email: data.user?.email,
+        role: userData?.role || 'user',
       },
       message: 'User registered successfully. Please check your email for verification.',
     })
