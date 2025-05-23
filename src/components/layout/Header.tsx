@@ -6,6 +6,7 @@ interface HeaderProps {
   user: {
     id: string
     email: string
+    role?: string
   }
   onLogout: () => void
 }
@@ -27,6 +28,11 @@ export function Header({ user, onLogout }: HeaderProps) {
           size="sm"
         >
           {user.email}
+          {user.role && (
+            <Text as="span" fontSize="xs" color="gray.500" ml={2}>
+              ({user.role})
+            </Text>
+          )}
         </MenuButton>
         <MenuList>
           <MenuItem icon={<FiEdit />} onClick={() => router.push('/app/profile')}>

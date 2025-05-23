@@ -21,6 +21,20 @@ interface DashboardUser {
   id: string
   email: string
   last_sign_in_at: string
+  role?: string
+}
+
+interface ProfileData {
+  id: string
+  email: string
+  role: string
+  first_name?: string
+  last_name?: string
+  phone_number?: string
+  department?: string
+  created_at?: string
+  updated_at?: string
+  is_active?: boolean
 }
 
 export default function AppLayout() {
@@ -36,11 +50,21 @@ export default function AppLayout() {
 
   const checkAuth = async () => {
     try {
-      const { data, error } = await api.auth.me()
-      if (error || !data) {
-        throw new Error(error || 'Not authenticated')
+      const { data: authData, error: authError } = await api.auth.me()
+      if (authError || !authData) {
+        throw new Error(authError || 'Not authenticated')
       }
-      setUser(data.user)
+
+      // Fetch user profile to get role
+      const { data: profileData, error: profileError } = await api.get<ProfileData>('/profile')
+      if (profileError || !profileData) {
+        throw new Error(profileError || 'Failed to fetch profile')
+      }
+
+      setUser({
+        ...authData.user,
+        role: profileData.role,
+      })
     } catch {
       router.push('/')
     } finally {
@@ -113,7 +137,7 @@ export default function AppLayout() {
       </GridItem>
 
       <GridItem area="nav" display={{ base: 'none', lg: 'block' }}>
-        <AppDrawer isOpen={isOpen} onClose={onClose} />
+        <AppDrawer isOpen={isOpen} onClose={onClose} user={user} />
       </GridItem>
 
       <GridItem area="main">

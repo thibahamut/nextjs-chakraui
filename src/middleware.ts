@@ -1,50 +1,72 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Lista de rotas públicas que não precisam de autenticação
-const publicRoutes = ['/', '/api']
+function getTokenFromCookie(request: NextRequest) {
+  const cookie = request.headers.get('cookie') || '';
+  const match = cookie.match(/sb-access-token=([^;]+)/);
+  return match ? match[1] : null;
+}
 
-export async function middleware(req: NextRequest) {
-  // Se for uma rota pública, permite o acesso sem verificação
-  if (publicRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
-    return NextResponse.next()
-  }
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-  // Se for um arquivo estático ou recurso, permite o acesso
+  // Skip middleware for static files and API routes
   if (
-    req.nextUrl.pathname.startsWith('/_next') ||
-    req.nextUrl.pathname.startsWith('/static') ||
-    req.nextUrl.pathname.includes('.')
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/static/') ||
+    pathname.includes('.') ||
+    pathname === '/favicon.ico'
   ) {
     return NextResponse.next()
   }
 
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
-  // Se estiver na página de login e tiver sessão, redireciona para dashboard
-  if (req.nextUrl.pathname === '/auth/login' && session) {
-    const redirectUrl = new URL('/app', req.url)
-    return NextResponse.redirect(redirectUrl)
+  // Always allow access to home page
+  if (pathname === '/') {
+    return NextResponse.next()
   }
 
-  // Se não houver sessão e a rota não for pública, redireciona para home
-  if (!session && !publicRoutes.some(route => req.nextUrl.pathname.startsWith(route))) {
-    const redirectUrl = new URL('/', req.url)
-    return NextResponse.redirect(redirectUrl)
+  // Check if user has authentication token
+  const token = getTokenFromCookie(request)
+  const isLoggedIn = !!token
+
+  // Handle /auth routes
+  if (pathname.startsWith('/auth')) {
+    // If user is logged in, redirect to /app
+    if (isLoggedIn) {
+      return NextResponse.redirect(new URL('/app', request.url))
+    }
+    // If not logged in, allow access to auth pages
+    return NextResponse.next()
   }
 
-  return res
+  // Handle /app routes
+  if (pathname.startsWith('/app')) {
+    // If user is not logged in, redirect to home
+    if (!isLoggedIn) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+    // If logged in, allow access
+    return NextResponse.next()
+  }
+
+  // For any other protected routes, redirect to home if not logged in
+  if (!isLoggedIn) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    // Protege todas as rotas exceto as públicas e arquivos estáticos
-    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - api routes
+     */
+    '/((?!_next/static|_next/image|favicon.ico|api).*)',
   ],
 } 

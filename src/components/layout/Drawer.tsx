@@ -13,6 +13,7 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import {
   FiHome,
   FiUser,
@@ -29,9 +30,13 @@ import {
 interface DrawerProps {
   isOpen: boolean
   onClose: () => void
+  user: {
+    id: string
+    email: string
+  }
 }
 
-export function AppDrawer({ isOpen, onClose }: DrawerProps) {
+export function AppDrawer({ isOpen, onClose, user }: DrawerProps) {
   const router = useRouter()
   const isLargeScreen = useBreakpointValue({ base: false, lg: true })
 
@@ -52,6 +57,7 @@ export function AppDrawer({ isOpen, onClose }: DrawerProps) {
       >
         Início
       </Button>
+
       <Button
         variant="ghost"
         justifyContent="flex-start"
@@ -71,44 +77,56 @@ export function AppDrawer({ isOpen, onClose }: DrawerProps) {
       >
         Regulamento
       </Button>
+
       <Button
         variant="ghost"
         justifyContent="flex-start"
+        onClick={() => handleNavigation('/app/format-options')}
         leftIcon={<Icon as={FiCalendar} />}
       >
         Opções de Formato
       </Button>
+
       <Button
         variant="ghost"
         justifyContent="flex-start"
+        onClick={() => handleNavigation('/app/structure')}
         leftIcon={<Icon as={FiLayout} />}
       >
         Estrutura
       </Button>
+
       <Button
         variant="ghost"
         justifyContent="flex-start"
+        onClick={() => handleNavigation('/app/visual-communication')}
         leftIcon={<Icon as={FiImage} />}
       >
         Comunicação Visual
       </Button>
+
       <Button
         variant="ghost"
         justifyContent="flex-start"
+        onClick={() => handleNavigation('/app/menu')}
         leftIcon={<Icon as={FiCoffee} />}
       >
         Cardápio
       </Button>
+
       <Button
         variant="ghost"
         justifyContent="flex-start"
+        onClick={() => handleNavigation('/app/services')}
         leftIcon={<Icon as={FiServer} />}
       >
         Serviços
       </Button>
+
       <Button
         variant="ghost"
         justifyContent="flex-start"
+        onClick={() => handleNavigation('/app/giftout')}
         leftIcon={<Icon as={FiGift} />}
       >
         Giftout
@@ -119,6 +137,7 @@ export function AppDrawer({ isOpen, onClose }: DrawerProps) {
       <Button
         variant="ghost"
         justifyContent="flex-start"
+        onClick={() => handleNavigation('/app/settings')}
         leftIcon={<Icon as={FiSettings} />}
       >
         Configurações
@@ -135,15 +154,19 @@ export function AppDrawer({ isOpen, onClose }: DrawerProps) {
   }
 
   return (
-    <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-      <DrawerOverlay />
-      <DrawerContent>
-        <DrawerCloseButton />
-        <DrawerHeader>Menu</DrawerHeader>
-        <DrawerBody>
-          <NavigationContent />
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
+    <Box
+      position="fixed"
+      top={0}
+      left={0}
+      w="full"
+      h="full"
+      bg="white"
+      zIndex={20}
+      transform={isOpen ? 'translateX(0)' : 'translateX(-100%)'}
+      transition="transform 0.2s"
+      p={4}
+    >
+      <NavigationContent />
+    </Box>
   )
 } 
