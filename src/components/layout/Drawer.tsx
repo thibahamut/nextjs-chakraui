@@ -43,7 +43,7 @@ interface DrawerProps {
 export function AppDrawer({ isOpen, onClose, user }: DrawerProps) {
   const router = useRouter()
   const isLargeScreen = useBreakpointValue({ base: false, lg: true })
-  const { hasRole } = useRoleCheck(user.role)
+  const { hasPermission } = useRoleCheck(user.role)
 
   const handleNavigation = (path: string) => {
     if (!isLargeScreen) {
@@ -160,7 +160,7 @@ export function AppDrawer({ isOpen, onClose, user }: DrawerProps) {
 
       <Divider my={2} />
 
-      {hasRole('super_admin') && (
+      {hasPermission(['super_admin']) && (
         <MotionButton
           variant="ghost"
           justifyContent="flex-start"

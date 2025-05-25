@@ -52,60 +52,70 @@ export default function ForgotPassword() {
   }
 
   return (
-    <Container maxW="container.sm" py={10}>
-      <VStack spacing={8}>
-        <Box textAlign="center">
-          <Box position="relative" width={200} height={100} mx="auto">
-            <Image
-              src="/images/vw-logo.png"
-              alt="VW Logo"
-              fill
-              style={{ objectFit: 'contain' }}
-              priority
-            />
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      minH="100vh"
+      gap={8}
+      p={4}
+    >
+      <Container maxW="container.sm" py={10}>
+        <VStack spacing={8}>
+          <Box textAlign="center">
+            <Box position="relative" width={200} height={100} mx="auto">
+              <Image
+                src="/images/vw-logo.png"
+                alt="VW Logo"
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            </Box>
+            <Heading mt={4} size="lg">
+              Recuperar Senha
+            </Heading>
+            <Text mt={2} color="gray.600">
+              Digite seu email para receber instruções de recuperação de senha
+            </Text>
           </Box>
-          <Heading mt={4} size="lg">
-            Recuperar Senha
-          </Heading>
-          <Text mt={2} color="gray.600">
-            Digite seu email para receber instruções de recuperação de senha
-          </Text>
-        </Box>
 
-        <Box w="100%" p={8} borderWidth={1} borderRadius="lg">
-          <form onSubmit={handleSubmit}>
-            <VStack spacing={4}>
-              <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FormControl>
+          <Box w="100%" p={8} borderWidth={1} borderRadius="lg">
+            <form onSubmit={handleSubmit}>
+              <VStack spacing={4}>
+                <FormControl isRequired>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </FormControl>
 
-              <Button
-                type="submit"
-                colorScheme="blue"
-                width="100%"
-                isLoading={loading}
-              >
-                Enviar instruções
-              </Button>
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  width="100%"
+                  isLoading={loading}
+                >
+                  Enviar instruções
+                </Button>
 
-              <Button
-                as={NextLink}
-                href="/auth/login"
-                variant="ghost"
-                colorScheme="blue"
-                width="100%"
-              >
-                Voltar para o login
-              </Button>
-            </VStack>
-          </form>
-        </Box>
-      </VStack>
-    </Container>
+                <Button
+                  as={NextLink}
+                  href="/auth/login"
+                  variant="ghost"
+                  colorScheme="blue"
+                  width="100%"
+                >
+                  Voltar para o login
+                </Button>
+              </VStack>
+            </form>
+          </Box>
+        </VStack>
+      </Container>
+    </Box>
   )
 } 

@@ -76,76 +76,86 @@ export default function Login() {
   }
 
   return (
-    <Container maxW="container.sm" py={10}>
-      <VStack spacing={8}>
-        <Box textAlign="center">
-          <Box position="relative" width={200} height={100} mx="auto">
-            <Image
-              src="/images/vw-logo.png"
-              alt="VW Logo"
-              fill
-              style={{ objectFit: 'contain' }}
-              priority
-            />
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      minH="100vh"
+      gap={8}
+      p={4}
+    >
+      <Container maxW="container.sm" py={10}>
+        <VStack spacing={8}>
+          <Box textAlign="center">
+            <Box position="relative" width={200} height={100} mx="auto">
+              <Image
+                src="/images/vw-logo.png"
+                alt="VW Logo"
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            </Box>
+            <Heading mt={4} size="lg">
+              Login
+            </Heading>
           </Box>
-          <Heading mt={4} size="lg">
-            Login
-          </Heading>
-        </Box>
 
-        <Box w="100%" p={8} borderWidth={1} borderRadius="lg">
-          <form onSubmit={handleSubmit}>
-            <VStack spacing={4}>
-              <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FormControl>
+          <Box w="100%" p={8} borderWidth={1} borderRadius="lg">
+            <form onSubmit={handleSubmit}>
+              <VStack spacing={4}>
+                <FormControl isRequired>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </FormControl>
 
-              <FormControl isRequired>
-                <FormLabel>Password</FormLabel>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <FormHelperText textAlign="right">
-                  <Link as={NextLink} href="/auth/forgot-password" color="blue.500">
-                    Esqueceu sua senha?
+                <FormControl isRequired>
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <FormHelperText textAlign="right">
+                    <Link as={NextLink} href="/auth/forgot-password" color="blue.500">
+                      Esqueceu sua senha?
+                    </Link>
+                  </FormHelperText>
+                </FormControl>
+
+                <Button
+                  type="submit"
+                  colorScheme="blue"
+                  width="100%"
+                  isLoading={loading}
+                >
+                  Login
+                </Button>
+
+                <HStack spacing={4} width="100%" justify="center">
+                  <Link as={NextLink} href="/auth/register" color="blue.500">
+                    Não tem conta? Registre-se
                   </Link>
-                </FormHelperText>
-              </FormControl>
+                </HStack>
+              </VStack>
+            </form>
+          </Box>
 
-              <Button
-                type="submit"
-                colorScheme="blue"
-                width="100%"
-                isLoading={loading}
-              >
-                Login
-              </Button>
-
-              <HStack spacing={4} width="100%" justify="center">
-                <Link as={NextLink} href="/auth/register" color="blue.500">
-                  Não tem conta? Registre-se
-                </Link>
-              </HStack>
-            </VStack>
-          </form>
-        </Box>
-
-        <Button
-          as={NextLink}
-          href="/"
-          variant="ghost"
-          colorScheme="blue"
-        >
-          Return to Home
-        </Button>
-      </VStack>
-    </Container>
+          <Button
+            as={NextLink}
+            href="/"
+            variant="ghost"
+            colorScheme="blue"
+          >
+            Return to Home
+          </Button>
+        </VStack>
+      </Container>
+    </Box>
   )
 } 

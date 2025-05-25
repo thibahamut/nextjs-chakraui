@@ -67,8 +67,15 @@ export const api = {
       return api.post('/auth/login', { email, password });
     },
 
-    async register(email: string, password: string) {
-      return api.post('/auth/register', { email, password });
+    async register(userData: {
+      email: string;
+      password: string;
+      first_name: string;
+      last_name: string;
+      phone_number: string;
+      department: string;
+    }) {
+      return api.post('/auth/register', userData);
     },
 
     async forgotPassword(email: string) {

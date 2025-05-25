@@ -1,24 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { supabase } from '@/lib/supabase'
-
-// Define role hierarchy
-const ROLE_HIERARCHY = {
-  'super_admin': 4,
-  'admin': 3,
-  'manager': 2,
-  'dn': 1,
-  'user': 0
-} as const
-
-type UserRole = keyof typeof ROLE_HIERARCHY
-
-// Define route permissions
-const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
-  '/app/admin': ['super_admin', 'admin'],
-  '/app/management': ['super_admin', 'admin', 'manager'],
-  '/app/settings': ['super_admin', 'admin'],
-}
+import { UserRole, ROUTE_PERMISSIONS } from '@/lib/roles'
 
 function getTokenFromCookie(request: NextRequest) {
   const cookie = request.headers.get('cookie') || '';

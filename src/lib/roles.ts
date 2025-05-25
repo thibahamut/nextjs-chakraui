@@ -11,20 +11,14 @@ export const ROLE_HIERARCHY = {
 
 export type UserRole = keyof typeof ROLE_HIERARCHY
 
-// Helper function to check if a user has a specific role
-export function hasRole(userRole: UserRole | undefined | null, requiredRole: UserRole): boolean {
-  if (!userRole) return false
-  return userRole === requiredRole
+export const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
+  '/app/admin': ['super_admin', 'admin'],
+  '/app/management': ['super_admin', 'admin', 'manager'],
+  '/app/settings': ['super_admin', 'admin'],
 }
 
-// Helper function to check if a user has any of the required roles
-export function hasAnyRole(userRole: UserRole | undefined | null, requiredRoles: UserRole[]): boolean {
-  if (!userRole) return false
-  return requiredRoles.includes(userRole)
-}
-
-// Helper function to check if a user has all of the required roles
-export function hasAllRoles(userRole: UserRole | undefined | null, requiredRoles: UserRole[]): boolean {
+// Helper function to check if a user has permission based on required roles
+export function hasPermission(userRole: UserRole | undefined | null, requiredRoles: UserRole[]): boolean {
   if (!userRole) return false
   return requiredRoles.includes(userRole)
 }
@@ -36,7 +30,7 @@ export function withRoleCheck<P extends { userRole?: UserRole }>(
 ) {
   return function RoleCheckedComponent(props: P) {
     const { userRole, ...rest } = props
-    if (hasAnyRole(userRole, allowedRoles)) {
+    if (hasPermission(userRole, allowedRoles)) {
       return React.createElement(Component, rest as P)
     }
     return null
@@ -46,8 +40,6 @@ export function withRoleCheck<P extends { userRole?: UserRole }>(
 // Hook to check role permissions
 export function useRoleCheck(userRole: UserRole | undefined | null) {
   return {
-    hasRole: (requiredRole: UserRole) => hasRole(userRole, requiredRole),
-    hasAnyRole: (requiredRoles: UserRole[]) => hasAnyRole(userRole, requiredRoles),
-    hasAllRoles: (requiredRoles: UserRole[]) => hasAllRoles(userRole, requiredRoles),
+    hasPermission: (requiredRoles: UserRole[]) => hasPermission(userRole, requiredRoles)
   }
 } 
