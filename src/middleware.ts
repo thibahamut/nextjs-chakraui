@@ -17,6 +17,7 @@ type UserRole = keyof typeof ROLE_HIERARCHY
 const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
   '/app/admin': ['super_admin', 'admin'],
   '/app/management': ['super_admin', 'admin', 'manager'],
+  '/app/settings': ['super_admin', 'admin'],
 }
 
 function getTokenFromCookie(request: NextRequest) {

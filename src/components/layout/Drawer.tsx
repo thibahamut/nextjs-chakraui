@@ -1,10 +1,4 @@
 import {
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
   VStack,
   Button,
   Icon,
@@ -13,9 +7,7 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
 import {
-  FiHome,
   FiUser,
   FiSettings,
   FiFileText,
@@ -27,15 +19,15 @@ import {
   FiServer,
 } from 'react-icons/fi'
 import { motion } from 'framer-motion'
+import { useRoleCheck, UserRole } from '@/lib/roles'
 
 const MotionVStack = motion(VStack)
 const MotionButton = motion(Button)
 
-// Animation configuration
 const ANIMATION_CONFIG = {
-  duration: 0.15, // Reduced from 0.3 to 0.15 for faster animation
-  staggerDelay: 0.05, // Reduced from 0.1 to 0.05 for faster stagger
-  slideDistance: -30, // Reduced from -20 to -10 for subtler movement
+  duration: 0.15,
+  staggerDelay: 0.05,
+  slideDistance: -30,
 }
 
 interface DrawerProps {
@@ -44,12 +36,14 @@ interface DrawerProps {
   user: {
     id: string
     email: string
+    role: UserRole
   }
 }
 
 export function AppDrawer({ isOpen, onClose, user }: DrawerProps) {
   const router = useRouter()
   const isLargeScreen = useBreakpointValue({ base: false, lg: true })
+  const { hasRole } = useRoleCheck(user.role)
 
   const handleNavigation = (path: string) => {
     if (!isLargeScreen) {
@@ -166,17 +160,19 @@ export function AppDrawer({ isOpen, onClose, user }: DrawerProps) {
 
       <Divider my={2} />
 
-      <MotionButton
-        variant="ghost"
-        justifyContent="flex-start"
-        onClick={() => handleNavigation('/app/settings')}
-        leftIcon={<Icon as={FiSettings} />}
-        initial={{ x: ANIMATION_CONFIG.slideDistance, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: ANIMATION_CONFIG.duration, delay: ANIMATION_CONFIG.staggerDelay * 9 }}
-      >
-        Configurações
-      </MotionButton>
+      {hasRole('super_admin') && (
+        <MotionButton
+          variant="ghost"
+          justifyContent="flex-start"
+          onClick={() => handleNavigation('/app/settings')}
+          leftIcon={<Icon as={FiSettings} />}
+          initial={{ x: ANIMATION_CONFIG.slideDistance, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: ANIMATION_CONFIG.duration, delay: ANIMATION_CONFIG.staggerDelay * 9 }}
+        >
+          Configurações
+        </MotionButton>
+      )}
     </MotionVStack>
   )
 
