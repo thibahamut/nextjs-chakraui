@@ -18,7 +18,7 @@ import Image from 'next/image'
 import { api } from '@/lib/api'
 import { toast } from '@/lib/toast'
 
-export default function Login() {
+export default function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -47,19 +47,19 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const { error } = await api.auth.login(email, password)
+      const { error } = await api.auth.register(email, password)
 
       if (error) {
         throw new Error(error)
       }
 
       toast({
-        title: 'Login com sucesso',
-        description: 'Bem-vindo de volta!',
+        title: 'Registro com sucesso',
+        description: 'Por favor, verifique seu email para verificação.',
         status: 'success',
       })
 
-      router.push('/app')
+      router.push('/auth/login')
     } catch (error) {
       toast({
         title: 'Erro',
@@ -89,7 +89,7 @@ export default function Login() {
             />
           </Box>
           <Heading mt={4} size="lg">
-            Login
+            Registrar
           </Heading>
         </Box>
 
@@ -112,11 +112,6 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <FormHelperText textAlign="right">
-                  <Link as={NextLink} href="/auth/forgot-password" color="blue.500">
-                    Esqueceu sua senha?
-                  </Link>
-                </FormHelperText>
               </FormControl>
 
               <Button
@@ -125,12 +120,12 @@ export default function Login() {
                 width="100%"
                 isLoading={loading}
               >
-                Login
+                Registrar
               </Button>
 
               <HStack spacing={4} width="100%" justify="center">
-                <Link as={NextLink} href="/auth/register" color="blue.500">
-                  Não tem conta? Registre-se
+                <Link as={NextLink} href="/auth/login" color="blue.500">
+                  Já tem conta? Faça login
                 </Link>
               </HStack>
             </VStack>
